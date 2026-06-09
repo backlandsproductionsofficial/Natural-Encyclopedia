@@ -1,0 +1,660 @@
+/* ─── FUSION BOTANIQUE & HAUTE COUTURE ─── */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    /* Nuances Royales Forestières & Or Ancien */
+    --accent: #1b4332;
+    --accent-hover: #081c15;
+    --accent-light: #e8f5e9;
+    --accent-text: #2d6a4f;
+    --gold: #d4a373;
+    
+    /* Couleurs de fond texturées et organiques */
+    --bg-main: #fcfbf7;          /* Teinte papier de soie / ivoire chaud */
+    --bg-card: #ffffff;
+    --bg-panel: #f3f5f1;         /* Douceur de Matcha */
+    
+    /* Hiérarchie de texte haut de gamme */
+    --text-main: #0b1a13;
+    --text-muted: #4a5c53;
+    --text-faint: #93a89d;
+    
+    /* Signatures Visuelles Imaginatives */
+    --radius-organic: 30px 15px 30px 15px; /* Découpe asymétrique chic */
+    --radius-round: 24px;
+    --glass-bright: rgba(255, 255, 255, 0.75);
+    --shadow-soft: 0 10px 40px rgba(27, 67, 50, 0.04);
+    --shadow-epic: 0 30px 60px rgba(11, 26, 19, 0.08);
+    --transition-smooth: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+    background-image: 
+        radial-gradient(rgba(45, 106, 79, 0.02) 1px, transparent 0),
+        radial-gradient(rgba(45, 106, 79, 0.02) 1px, transparent 0);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px; /* Effet discret de papier millimétré de chercheur */
+}
+
+/* ─── HEADER SPECTACULAIRE ET IMMERSIF ─── */
+header {
+    background: linear-gradient(145deg, #081c15, #1b4332, #2d6a4f);
+    padding: 8rem 2rem 11rem;
+    text-align: center;
+    color: white;
+    position: relative;
+    clip-path: polygon(0 0, 100% 0, 100% 90%, 50% 100%, 0 90%); /* Découpe en pointe de flèche douce */
+    margin-bottom: -5rem;
+    box-shadow: inset 0 -20px 50px rgba(0,0,0,0.2);
+}
+
+header::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, transparent, rgba(8, 28, 21, 0.5));
+    pointer-events: none;
+}
+
+header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 7vw, 5rem);
+    font-weight: 700;
+    letter-spacing: -2px;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+
+header h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--gold);
+    position: relative;
+}
+
+header p {
+    font-size: 1.2rem;
+    opacity: 0.85;
+    max-width: 650px;
+    margin: 0 auto;
+    font-weight: 300;
+    letter-spacing: 0.3px;
+}
+
+/* ─── BARRE DE FILTRES FLOTTANTE "GLASSMORPHIC" ─── */
+.sticky-wrapper {
+    position: sticky;
+    top: 24px;
+    z-index: 1000;
+    padding: 0 2rem;
+}
+
+.controls-bar {
+    background: var(--glass-bright);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: var(--radius-round);
+    padding: 1.2rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    box-shadow: var(--shadow-epic);
+    align-items: center;
+}
+
+.search-wrap {
+    position: relative;
+    flex: 1;
+    min-width: 280px;
+}
+
+.search-wrap svg {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    transition: var(--transition-smooth);
+}
+
+.search-wrap input {
+    width: 100%;
+    padding: 16px 16px 16px 56px;
+    border-radius: 18px;
+    border: 1px solid rgba(27, 67, 50, 0.08);
+    background: #ffffff;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.01);
+}
+
+.search-wrap input:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 5px rgba(212, 163, 115, 0.15);
+}
+
+.search-wrap input:focus + svg {
+    color: var(--gold);
+    transform: translateY(-50%) scale(1.1);
+}
+
+/* FILTRES CHICS & BOUTONS GALBÉS */
+.filter-group {
+    display: flex;
+    gap: 0.6rem;
+    align-items: center;
+}
+
+#cat-filters {
+    scrollbar-width: none;
+}
+#cat-filters::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-btn {
+    padding: 12px 24px;
+    border-radius: 50px;
+    border: 1px solid rgba(27, 67, 50, 0.05);
+    background: rgba(255, 255, 255, 0.5);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.92rem;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--transition-smooth);
+}
+
+.filter-btn:hover {
+    background: white;
+    color: var(--accent-text);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(27, 67, 50, 0.05);
+}
+
+.filter-btn.active {
+    background: var(--accent);
+    color: #ffffff;
+    border-color: var(--accent);
+    box-shadow: 0 8px 20px rgba(27, 67, 50, 0.2);
+}
+
+/* ─── LA GRILLE DE VOYAGE BOTANIQUE ─── */
+.main-content {
+    max-width: 1400px;
+    margin: 7rem auto 5rem;
+    padding: 0 2rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 3rem;
+}
+
+/* LES CARTES : L'EFFET FLOTTANT ASYMÉTRIQUE */
+.card {
+    background: var(--bg-card);
+    border-radius: var(--radius-organic); /* Forme asymétrique poétique */
+    overflow: hidden;
+    cursor: pointer;
+    border: 1px solid rgba(27, 67, 50, 0.04);
+    position: relative;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition-smooth);
+}
+
+.card:hover {
+    /* Micro-rotation aléatoire / organique et soulèvement spectaculaire */
+    transform: translateY(-12px) scale(1.01) rotate(1deg); 
+    box-shadow: var(--shadow-epic);
+    border-color: rgba(212, 163, 115, 0.3);
+}
+
+.card-img-wrap {
+    height: 240px;
+    background: linear-gradient(to bottom, #f3f5f1, #e8ede6);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-img-wrap img {
+    transition: transform 0.7s cubic-bezier(0.1, 1, 0.1, 1);
+}
+
+.card:hover .card-img-wrap img {
+    transform: scale(1.08) rotate(-1deg); /* Zoom tout en douceur */
+}
+
+/* Zone Émoji si image absente */
+.emoji-fb {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 5rem;
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,0.06));
+    z-index: 0;
+}
+
+.card-body {
+    padding: 1.8rem;
+    position: relative;
+}
+
+.card-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.65rem;
+    color: var(--text-main);
+    margin-bottom: 0.2rem;
+    font-weight: 700;
+}
+
+.card-latin {
+    display: block;
+    font-style: italic;
+    font-size: 0.9rem;
+    color: var(--text-faint);
+    margin-bottom: 1.2rem;
+    letter-spacing: 0.2px;
+}
+
+.card-cat-badge {
+    display: inline-block;
+    padding: 5px 14px;
+    border-radius: 30px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+
+/* Section Calories fine */
+.kcal-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    margin-top: 1.2rem;
+    border-top: 1px dashed rgba(27, 67, 50, 0.08);
+    padding-top: 1rem;
+}
+
+.kcal-val {
+    font-weight: 700;
+    color: var(--accent-text);
+}
+
+/* ─── MODALE IMMENSÉMENT ÉLÉGANTE (POPUP) ─── */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(8, 28, 21, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    padding: 2rem;
+}
+
+.overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal {
+    background: #ffffff;
+    width: 100%;
+    max-width: 700px;
+    max-height: 85vh;
+    border-radius: 40px; /* Bords ultra qualitatifs */
+    overflow-y: auto;
+    box-shadow: 0 50px 100px rgba(8, 28, 21, 0.2);
+    border: 1px solid rgba(255,255,255,0.8);
+    transform: scale(0.93) translateY(30px);
+    transition: var(--transition-smooth);
+}
+
+.overlay.open .modal {
+    transform: scale(1) translateY(0);
+}
+
+.modal-hero {
+    height: 320px;
+    position: relative;
+    background: var(--bg-panel);
+    box-shadow: inset 0 -30px 40px rgba(0,0,0,0.04);
+}
+
+.modal-close {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: #ffffff;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: none;
+    font-size: 1.8rem;
+    font-weight: 300;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: var(--transition-smooth);
+}
+
+.modal-close:hover {
+    transform: scale(1.1) rotate(90deg);
+    background: var(--text-main);
+    color: white;
+}
+
+.modal-content {
+    padding: 2.5rem;
+}
+
+/* NAVIGATION DES ONGLETS DE LA MODALE */
+.tabs-nav {
+    display: flex;
+    border-bottom: 2px solid var(--bg-panel);
+    margin-bottom: 2rem;
+    gap: 2rem;
+}
+
+.tab-btn {
+    padding: 12px 4px;
+    background: none;
+    border: none;
+    font-family: inherit;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    cursor: pointer;
+    position: relative;
+    transition: var(--transition-smooth);
+}
+
+.tab-btn:hover {
+    color: var(--accent-text);
+}
+
+.tab-btn.active {
+    color: var(--text-main);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--gold); /* Soulignement Or chaud */
+    border-radius: 4px;
+}
+
+/* ANIMATIONS D'ENTRÉE DES CARTES */
+@keyframes luxuryFadeUp {
+    from { 
+        opacity: 0; 
+        transform: translateY(30px) scale(0.97); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+.card {
+    animation: luxuryFadeUp 0.65s cubic-bezier(0.165, 0.84, 0.44, 1) backwards;
+}
+
+/* Décalage temporel fluide pour l'affichage séquentiel de la grille */
+.card:nth-child(1) { animation-delay: 0.05s; }
+.card:nth-child(2) { animation-delay: 0.1s; }
+.card:nth-child(3) { animation-delay: 0.15s; }
+.card:nth-child(4) { animation-delay: 0.2s; }
+
+/* ════════════════════════════════════════════════════════════════
+   MÉDIAS QUERIES : ADAPTATION SMARTPHONE (Écrans inférieurs à 768px)
+   ════════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+    
+    /* 1. Réduction des espaces de l'en-tête */
+    header {
+        padding: 5rem 1.2rem 7rem;
+        margin-bottom: -3.5rem;
+        clip-path: polygon(0 0, 100% 0, 100% 93%, 50% 100%, 0 93%); /* Pointe plus douce sur mobile */
+    }
+
+    header h1 {
+        font-size: 2.2rem; /* Évite que le titre ne se coupe ou passe sur 3 lignes */
+        margin-bottom: 0.8rem;
+    }
+
+    header p {
+        font-size: 0.95rem;
+    }
+
+    /* 2. Optimisation de la barre flottante de recherche & filtres */
+    .sticky-wrapper {
+        top: 12px; /* Plus près du bord haut */
+        padding: 0 1rem;
+    }
+
+    .controls-bar {
+        padding: 0.75rem;
+        gap: 0.75rem;
+        border-radius: 20px;
+        flex-direction: column; /* Aligne la recherche au-dessus des boutons */
+        align-items: stretch; /* Force les éléments à prendre toute la largeur */
+    }
+
+    .search-wrap {
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .search-wrap input {
+        padding: 12px 12px 12px 48px; /* Un peu plus compact */
+        font-size: 0.95rem;
+    }
+
+    /* Permet aux groupes de filtres de défiler horizontalement avec le doigt */
+    .filter-group {
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding-bottom: 4px; /* Espace pour ne pas coller au défilement */
+        -webkit-overflow-scrolling: touch; /* Défilement fluide sur iPhone */
+        justify-content: flex-start;
+    }
+
+    .filter-btn {
+        padding: 8px 16px;
+        font-size: 0.85rem; /* Boutons légèrement plus petits */
+    }
+
+    /* 3. Ajustement de la grille et des cartes */
+    .main-content {
+        margin: 5rem auto 3rem;
+        padding: 0 1.2rem;
+    }
+
+    .grid {
+        grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); /* Permet d'avoir de belles cartes même sur petit écran */
+        gap: 1.5rem; /* Réduit l'espace vide entre les cartes */
+    }
+
+    .card {
+        border-radius: 20px 10px 20px 10px; /* Adoucit l'asymétrie sur mobile */
+    }
+
+    .card-img-wrap {
+        height: 180px; /* Moins haute pour éviter que la carte prenne tout l'écran */
+    }
+
+    .card-body {
+        padding: 1.2rem;
+    }
+
+    .card-name {
+        font-size: 1.4rem;
+    }
+
+    /* 4. Bloc de partage */
+    .share-container {
+        margin: 3rem auto -3rem;
+        padding: 0 1.2rem;
+        flex-direction: column; /* Empile le texte au-dessus des boutons */
+        gap: 0.6rem;
+    }
+
+    .share-btn {
+        padding: 8px 16px;
+        font-size: 0.82rem;
+    }
+
+    /* 5. Ajustement de la boîte modale (Popup de détails) */
+    .overlay {
+        padding: 0; /* Supprime les marges pour coller aux bords de l'écran */
+    }
+
+    .modal {
+        max-width: 100%;
+        height: 100%; /* Devient une page complète sur mobile pour un confort total */
+        max-height: 100vh;
+        border-radius: 0; /* Plus besoin d'arrondir les angles sur plein écran */
+    }
+
+    .modal-hero {
+        height: 220px;
+    }
+
+    .modal-close {
+        top: 16px;
+        right: 16px;
+        width: 38px;
+        height: 38px;
+    }
+
+    .modal-content {
+        padding: 1.5rem;
+    }
+
+    .tabs-nav {
+        gap: 1rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .tab-btn {
+        font-size: 0.95rem;
+    }
+}
+
+/* ─── PIED DE PAGE (FOOTER) ─── */
+.site-footer {
+    text-align: center;
+    padding: 4rem 2rem;
+    margin-top: 6rem;
+    border-top: 50px dashed rgba(27, 67, 50, 0.1);
+    color: rgb(5, 81, 13);
+    font-size: 0.9rem;
+    font-family: "Fuzzy Bubbles", sans-serif;
+}
+
+.version-badge {
+    background: var(--accent);
+    color: rgb(255, 255, 255);
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-left: 4px;
+    display: inline-block;
+}
+
+.updated-date {
+    font-size: 0.8rem;
+    color: var(--text-faint);
+    margin-top: 0.5rem;
+}
+
+/* ─── BOUTON FLÈCHE RETOUR EN HAUT ─── */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    color: var(--accent-text);
+    border: 1px solid rgba(27, 67, 50, 0.1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1500;
+    
+    /* Caché par défaut */
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(15px);
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Affiché quand on descend */
+.back-to-top.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.back-to-top:hover {
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+    transform: translateY(-5px);
+}
+
+.back-to-top svg {
+    transition: transform 0.3s ease;
+}
+
+.back-to-top:hover svg {
+    transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+    .back-to-top {
+        bottom: 20px;
+        right: 20px;
+        width: 44px;
+        height: 44px;
+    }
+}

@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Natural Encyclopedia by Rekolier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header>
+  <h1>Encyclopedia <em>Natural</em></h1>
+  <p>Découvrez la richesse nutritionnelle, l'histoire et les secrets de culture des plus beaux fruits et légumes.</p>
+</header>
+
+<div class="sticky-wrapper">
+  <div class="controls-bar">
+    <div class="search-wrap">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      <input type="text" id="search" placeholder="Pomme, origine, nutriment..." oninput="renderAll()">
+    </div>
+    
+    <div class="filter-group" id="type-filters">
+      <button class="filter-btn active" onclick="setType('tous',this)">Tous</button>
+      <button class="filter-btn" onclick="setType('fruit',this)">Fruits</button>
+      <button class="filter-btn" onclick="setType('legume',this)">Légumes</button>
+    </div>
+    
+    <div id="cat-filters" class="filter-group" style="overflow-x: auto; flex: 1;"></div>
+  </div>
+</div>
+
+<div class="main-content">
+  <div class="grid" id="grid"></div>
+</div>
+
+<footer class="site-footer">
+  <p>© 2026 Natural Encyclopedia by Rekolier, Claude and Gemini — Version <span class="version-badge">v1.2.2</span></p>
+  <p class="updated-date">Dernière mise à jour : 9 juin 2026</p>
+</footer>
+
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal"></div>
+</div>
+
+<button id="back-to-top" class="back-to-top" onclick="scrollToTop()" aria-label="Remonter en haut">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <polyline points="18 15 12 9 6 15"></polyline>
+  </svg>
+</button>
+
+<script>
+// Gardez tout votre code JavaScript actuel à cet endroit, et descendez tout en bas de votre balise <script>...
+
+
+// ════════════════════════════════════════════════════════════════
+//  BASE DE DONNÉES FUSIONNÉE COMPLETE (72 ITEMS)
+// ════════════════════════════════════════════════════════════════
+
+const DB = [
+
+  // ══ AGRUMES ══════════════════════════════════════════════════
+  {
+    id:1, nom:"Orange", type:"fruit", cat:"Agrumes", emoji:"🍊",
+    latin:"Citrus × sinensis", famille:"Rutacées",
+    saison:[11,0,1,2,3,4], saisonTxt:"Hiver – Printemps", origine:"Asie du Sud-Est",
+    image:"images/orange.jpg",
+    description:"L'orange est le fruit le plus cultivé au monde. Importée d'Asie par les marchands arabes au Moyen Âge, elle fut d'abord considérée comme un médicament avant de devenir un aliment courant. Sa pulpe est exceptionnellement riche en vitamine C, flavonoïdes et antioxydants.",
+    nutrition:{kcal:47, glucides:11.8, fibres:2.4, proteines:0.9, lipides:0.1, vitC:53},
+    tags:["Vitamine C","Flavonoïdes","Potassium","Antioxydants"],
+    funfact:null, plantation:null
+  },
+  {
+    id:2, nom:"Citron", type:"fruit", cat:"Agrumes", emoji:"🍋",
+    latin:"Citrus × limon", famille:"Rutacées",
+    saison:[11,0,1,2,3,4], saisonTxt:"Toute l'année", origine:"Inde (nord-est)",
+    image:"images/citron.jpg",
+    description:"Agrume acide incontournable en cuisine, riche en vitamine C et en acide citrique. Ce dernier favorise l'absorption du fer non-héminique des végétaux et agit comme conservateur naturel. Originaire du nord-est de l'Inde, il fut diffusé en Méditerranée par les marchands arabes vers le Xe siècle.",
+    nutrition:{kcal:29, glucides:9.3, fibres:2.8, proteines:1.1, lipides:0.3, vitC:53},
+    tags:["Vitamine C","Acide citrique","Flavonoïdes","Antioxydants"],
+    funfact:"Le citron n'existe pas à l'état sauvage ! C'est un hybride naturel entre la cédraie (Citrus medica) et la bigarade (Citrus aurantium), apparu probablement en Inde du Nord il y a plusieurs millénaires.",
+    plantation:{
+      exposition:"Plein soleil, abri du gel", sol:"Bien drainé, légèrement acide (pH 5,5–6,5)",
+      arrosage:"Régulier mais pas excessif", distance:"3–5 m (plein sol), possible en pot",
+      recolte:"Novembre à avril selon climat",
+      conseil:"En région froide, cultivez en pot et rentrez le citronnier à l'intérieur l'hiver. Il tolère jusqu'à -3 °C brièvement."
+    }
+  },
+  {
+    id:3, nom:"Pamplemousse", type:"fruit", cat:"Agrumes", emoji:"🍊",
+    latin:"Citrus × paradisi", famille:"Rutacées",
+    saison:[11,0,1,2], saisonTxt:"Hiver", origine:"Antilles (hybride naturel, XVIIIe s.)",
+    image:"images/pamplemousse.jpg",
+    description:"Hybride naturel apparu aux Antilles au XVIIIe siècle, né d'un croisement entre l'orange douce et le pomélo asiatique. Sa chair acidulée et légèrement amère est riche en lycopène (variétés roses). Attention : incompatible avec certains médicaments.",
+    nutrition:{kcal:40, glucides:10.7, fibres:1.6, proteines:0.8, lipides:0.1, vitC:31},
+    tags:["Vitamine C","Lycopène","Naringine","Vitamine A"],
+    funfact:null, plantation:null
+  },
+  {
+    id:4, nom:"Mandarine", type:"fruit", cat:"Agrumes", emoji:"🍊",
+    latin:"Citrus reticulata", famille:"Rutacées",
+    saison:[9,10,11,0], saisonTxt:"Automne – Hiver", origine:"Chine méridionale",
+    image:"images/mandarine.jpg",
+    description:"Cultivée depuis plus de 3 000 ans en Chine méridionale, la mandarine doit son nom aux mandarins (fonctionnaires impériaux) qui la servaient lors de cérémonies. Plus petite et plus sucrée que l'orange, avec une peau facile à peler.",
+    nutrition:{kcal:53, glucides:13.3, fibres:1.8, proteines:0.8, lipides:0.3, vitC:27},
+    tags:["Vitamine C","Vitamine B1","Calcium","Folate"],
+    funfact:null, plantation:null
+  },
+  {
+    id:5, nom:"Clémentine", type:"fruit", cat:"Agrumes", emoji:"🍊",
+    latin:"Citrus × clementina", famille:"Rutacées",
+    saison:[9,10,11,0], saisonTxt:"Automne – Hiver", origine:"Algérie (hybride, vers 1900)",
+    image:"images/clementine.jpg",
+    description:"Hybride créé vers 1900 par le Père Clément, missionnaire français en Algérie, en croisant un mandarinier et un bigaradier. Sans pépins et particulièrement sucrée, c'est l'agrume préféré des Français en hiver. La variété de Corse bénéficie d'une IGP.",
+    nutrition:{kcal:47, glucides:12, fibres:1.7, proteines:0.9, lipides:0.2, vitC:48},
+    tags:["Vitamine C","Folate","Potassium","Antioxydants"],
+    funfact:null, plantation:null
+  },
+  {
+    id:6, nom:"Citron vert", type:"fruit", cat:"Agrumes", emoji:"🍋",
+    latin:"Citrus aurantiifolia", famille:"Rutacées",
+    saison:[0,1,2,3,4,5,6,7,8,9,10,11], saisonTxt:"Toute l'année", origine:"Asie du Sud-Est",
+    image:"images/citron-vert.jpg",
+    description:"Originaire du sud-est asiatique, le citron vert (lime) fut diffusé dans le monde entier par les navigateurs arabes et portugais. Plus petit et plus acide que le jaune, son zeste aromatique est très utilisé dans les cuisines mexicaine, caribéenne et thaïlandaise.",
+    nutrition:{kcal:30, glucides:10.5, fibres:2.8, proteines:0.7, lipides:0.2, vitC:29},
+    tags:["Vitamine C","Acide folique","Calcium","Vitamine B6"],
+    funfact:null, plantation:null
+  },
+
+  // ══ BAIES & PETITS FRUITS ════════════════════════════════════
+  {
+    id:7, nom:"Fraise", type:"fruit", cat:"Baies", emoji:"🍓",
+    latin:"Fragaria × ananassa", famille:"Rosacées",
+    saison:[4,5,6], saisonTxt:"Printemps – Été", origine:"Europe / Amérique (hybride, XVIIIe s.)",
+    image:"images/fraise.jpg",
+    description:"Petit fruit rouge très parfumé, l'une des meilleures sources de vitamine C parmi les fruits communs. La fraise moderne est née en France au XVIIIe siècle du croisement entre deux espèces américaines. À consommer de préférence locale et de saison.",
+    nutrition:{kcal:32, glucides:7.7, fibres:2.0, proteines:0.7, lipides:0.3, vitC:59},
+    tags:["Vitamine C","Anthocyanes","Manganèse","Folates"],
+    funfact:"Techniquement, la fraise n'est pas une vraie baie mais un faux fruit — la partie rouge est le réceptacle floral charnu, les vrais fruits étant les akènes (petits grains) visibles en surface.",
+    plantation:{
+      exposition:"Plein soleil", sol:"Léger, acide (pH 5,5–6,5), bien drainé",
+      arrosage:"Régulier, au pied", distance:"25–30 cm entre plants",
+      recolte:"Avril à juin (remontants jusqu'en octobre)",
+      conseil:"Paillez le sol pour garder les fruits propres et limiter l'arrosage. Supprimez les stolons inutiles pour booster la récolte."
+    }
+  },
+  {
+    id:8, nom:"Framboise", type:"fruit", cat:"Baies", emoji:"🍓",
+    latin:"Rubus idaeus", famille:"Rosacées",
+    saison:[6,7,8], saisonTxt:"Été", origine:"Asie Mineure / Europe",
+    image:"images/framboise.jpg",
+    description:"Pousse spontanément dans toute l'Europe et l'Asie tempérée. Chaque framboise est un agrégat de petites drupeoles assemblées autour d'un réceptacle creux. Très fragile et périssable, elle est parmi les plus riches en antioxydants et en fibres de tous les fruits.",
+    nutrition:{kcal:52, glucides:11.9, fibres:6.5, proteines:1.2, lipides:0.7, vitC:26},
+    tags:["Vitamine C","Vitamine K","Manganèse","Ellagitanins"],
+    funfact:null, plantation:null
+  },
+  {
+    id:9, nom:"Myrtille", type:"fruit", cat:"Baies", emoji:"🫐",
+    latin:"Vaccinium myrtillus", famille:"Éricacées",
+    saison:[6,7,8], saisonTxt:"Été", origine:"Europe / Amérique du Nord",
+    image:"images/myrtille.jpg",
+    description:"Petit fruit bleu-violet aux propriétés antioxydantes exceptionnelles, dues aux anthocyanes qui lui donnent sa couleur. Pousse dans les forêts et tourbières d'Europe depuis la préhistoire. Régulièrement citée parmi les superfoods, elle soutient la santé cardiovasculaire.",
+    nutrition:{kcal:57, glucides:14, fibres:2.4, proteines:0.7, lipides:0.3, vitC:10},
+    tags:["Anthocyanes","Antioxydants","Vitamine C","Manganèse"],
+    funfact:"La myrtille sauvage européenne colore les dents et la langue en bleu-noir — contrairement au bleuet américain (blueberry) qui est creux à l'intérieur et tache beaucoup moins. Elles appartiennent au même genre mais sont des espèces différentes.",
+    plantation:{
+      exposition:"Plein soleil à mi-ombre", sol:"Très acide (pH 4–5), tourbeux, bien drainé",
+      arrosage:"Régulier avec eau non calcaire", distance:"1,2–1,5 m entre plants",
+      recolte:"Juillet à août",
+      conseil:"Acidifiez le sol avec de la tourbe ou des aiguilles de pin. Plantez 2 variétés différentes pour améliorer la pollinisation et doubler la récolte."
+    }
+  },
+  {
+    id:10, nom:"Cassis", type:"fruit", cat:"Baies", emoji:"🫐",
+    latin:"Ribes nigrum", famille:"Grossulariacées",
+    saison:[6,7,8], saisonTxt:"Été", origine:"Europe / Asie centrale",
+    image:"images/cassis.jpg",
+    description:"L'un des fruits les plus riches en vitamine C — 4 fois plus que l'orange à poids égal. Longtemps interdit de culture aux États-Unis (hôte d'une maladie du pin blanc). La Bourgogne est réputée pour sa production.",
+    nutrition:{kcal:63, glucides:15.4, fibres:3.5, proteines:1.4, lipides:0.4, vitC:180},
+    tags:["Vitamine C","Anthocyanes","Potassium","Antioxydants"],
+    funfact:null, plantation:null
+  },
+  {
+    id:11, nom:"Groseille rouge", type:"fruit", cat:"Baies", emoji:"🍒",
+    latin:"Ribes rubrum", famille:"Grossulariacées",
+    saison:[6,7,8], saisonTxt:"Été", origine:"Europe du Nord",
+    image:"images/groseille-rouge.jpg",
+    description:"Pousse à l'état sauvage dans les forêts de toute l'Europe du Nord. Très acidulée, ses petites baies translucides en grappes sont riches en pectine — un épaississant naturel idéal pour les gelées et confitures.",
+    nutrition:{kcal:56, glucides:13.8, fibres:4.3, proteines:1.4, lipides:0.2, vitC:41},
+    tags:["Vitamine C","Vitamine K","Pectine","Potassium"],
+    funfact:null, plantation:null
+  },
+  {
+    id:12, nom:"Mûre sauvage", type:"fruit", cat:"Baies", emoji:"🫐",
+    latin:"Rubus fruticosus", famille:"Rosacées",
+    saison:[7,8,9], saisonTxt:"Fin d'été – Automne", origine:"Europe / Amérique du Nord",
+    image:"images/mure-sauvage.jpg",
+    description:"Pousse dans les haies et lisières depuis la préhistoire. Comme la framboise, chaque mûre est un agrégat de drupeoles. Sa couleur noire intense traduit une concentration élevée en anthocyanes. Les Celtes lui attribuaient des vertus magiques.",
+    nutrition:{kcal:43, glucides:9.6, fibres:5.3, proteines:1.4, lipides:0.5, vitC:21},
+    tags:["Vitamine C","Vitamine K","Anthocyanes","Manganèse"],
+    funfact:null, plantation:null
+  },
+  {
+    id:13, nom:"Airelle rouge", type:"fruit", cat:"Baies", emoji:"🍒",
+    latin:"Vaccinium vitis-idaea", famille:"Éricacées",
+    saison:[8,9,10], saisonTxt:"Automne", origine:"Régions arctiques / montagnes",
+    image:"images/airelle-rouge.jpg",
+    description:"Pousse dans les forêts de conifères et les landes nordiques. Très acide naturellement, elle est consommée en confiture ou en sauce (tradition scandinave avec le gibier). Elle se conserve naturellement grâce à son acide benzoïque sans conservateurs ajoutés.",
+    nutrition:{kcal:46, glucides:11.9, fibres:4.2, proteines:0.4, lipides:0.1, vitC:13},
+    tags:["Vitamine C","Vitamine A","Acide benzoïque","Anthocyanes"],
+    funfact:null, plantation:null
+  },
+
+  // ══ FRUITS À NOYAU ══════════════════════════════════════════
+  {
+    id:14, nom:"Pêche", type:"fruit", cat:"Noyau", emoji:"🍑",
+    latin:"Prunus persica", famille:"Rosacées",
+    saison:[6,7,8,9], saisonTxt:"Été", origine:"Chine (nord-ouest)",
+    image:"images/peche.jpg",
+    description:"Originaire du nord-ouest de la Chine où elle est cultivée depuis plus de 4 000 ans, la pêche symbolise la longévité dans la culture taoïste. Introduite en Perse puis en Europe par les Romains, elle fut longtemps réservée aux tables royales.",
+    nutrition:{kcal:39, glucides:9.5, fibres:1.5, proteines:0.9, lipides:0.3, vitC:6},
+    tags:["Vitamine C","Bêta-carotène","Potassium","Vitamine A"],
+    funfact:null, plantation:null
+  },
+  {
+    id:15, nom:"Abricot", type:"fruit", cat:"Noyau", emoji:"🍑",
+    latin:"Prunus armeniaca", famille:"Rosacées",
+    saison:[5,6,7,8], saisonTxt:"Été", origine:"Chine / Arménie",
+    image:"images/abricot.jpg",
+    description:"Cultivé depuis 4 000 ans en Chine et en Arménie (son nom latin le rappelle). La Route de la Soie l'a diffusé jusqu'en Méditerranée. Sa couleur orange intense vient du bêta-carotène, dont il est une source particulièrement concentrée.",
+    nutrition:{kcal:48, glucides:11.1, fibres:2.0, proteines:1.4, lipides:0.4, vitC:10},
+    tags:["Bêta-carotène","Vitamine A","Potassium","Fibres"],
+    funfact:null, plantation:null
+  },
+  {
+    id:16, nom:"Cerise", type:"fruit", cat:"Noyau", emoji:"🍒",
+    latin:"Prunus avium", famille:"Rosacées",
+    saison:[5,6,7], saisonTxt:"Printemps – Été", origine:"Asie Mineure (mer Noire)",
+    image:"images/cerise.jpg",
+    description:"Le nom vient de Giresun (ancienne Cérasonte), port de mer Noire d'où le général Lucullus aurait rapporté l'arbre à Rome en 74 av. J.-C. La cerise est l'un des rares fruits naturellement riches en mélatonine, hormone régulatrice du sommeil.",
+    nutrition:{kcal:63, glucides:16, fibres:2.1, proteines:1.1, lipides:0.2, vitC:7},
+    tags:["Mélatonine","Anthocyanes","Vitamine C","Potassium"],
+    funfact:null, plantation:null
+  },
+  {
+    id:17, nom:"Prune", type:"fruit", cat:"Noyau", emoji:"🍑",
+    latin:"Prunus domestica", famille:"Rosacées",
+    saison:[7,8,9,10], saisonTxt:"Été – Automne", origine:"Asie / Caucase",
+    image:"images/prune.jpg",
+    description:"Les pruniers sauvages sont issus d'un croisement naturel apparu dans la région du Caucase. Des centaines de variétés : mirabelle, reine-claude, quetsche, prune d'Ente. La France est le 1er producteur mondial de pruneaux.",
+    nutrition:{kcal:46, glucides:11.4, fibres:1.4, proteines:0.7, lipides:0.3, vitC:9},
+    tags:["Vitamine K","Potassium","Sorbitol","Antioxydants"],
+    funfact:null, plantation:null
+  },
+  {
+    id:18, nom:"Nectarine", type:"fruit", cat:"Noyau", emoji:"🍑",
+    latin:"Prunus persica var. nucipersica", famille:"Rosacées",
+    saison:[6,7,8,9], saisonTxt:"Été", origine:"Chine (mutation naturelle de la pêche)",
+    image:"images/nectarine.jpg",
+    description:"La nectarine n'est pas un croisement pêche-prune, mais une mutation naturelle du pêcher — un gène récessif supprime le duvet. Elle est connue depuis l'Antiquité. Sa chair plus ferme lui donne une texture différente.",
+    nutrition:{kcal:44, glucides:10.6, fibres:1.7, proteines:1.1, lipides:0.3, vitC:5},
+    tags:["Vitamine C","Bêta-carotène","Potassium","Vitamine A"],
+    funfact:null, plantation:null
+  },
+  {
+    id:19, nom:"Mangue", type:"fruit", cat:"Noyau", emoji:"🥭",
+    latin:"Mangifera indica", famille:"Anacardiacées",
+    saison:[3,4,5,6], saisonTxt:"Printemps – Été", origine:"Inde / Myanmar",
+    image:"images/mangue.png",
+    description:"Cultivée dans le sous-continent indien depuis plus de 4 000 ans. Fruit national de l'Inde, du Pakistan et des Philippines. Sa pulpe orange vif est exceptionnellement riche en bêta-carotène. Plus de 500 variétés dans le monde.",
+    nutrition:{kcal:60, glucides:15, fibres:1.6, proteines:0.8, lipides:0.4, vitC:36},
+    tags:["Vitamine A","Vitamine C","Folates","Bêta-carotène"],
+    funfact:"Le manguier est un cousin botanique de la pistache et du cajou ! Ils appartiennent tous à la famille des Anacardiacées. La sève du manguier peut provoquer des réactions allergiques similaires au sumac vénéneux.",
+    plantation:{
+      exposition:"Plein soleil, tropical ou subtropical", sol:"Profond, bien drainé, pH 5,5–7",
+      arrosage:"Abondant hors floraison, modéré à la floraison", distance:"8–10 m entre arbres",
+      recolte:"3–5 mois après floraison",
+      conseil:"En France métropolitaine, culture en serre tropicale uniquement. Possible en pot dans les régions très douces. Un manguier greffé produit dès 2–3 ans contre 6 ans pour un semis."
+    }
+  },
+  {
+    id:20, nom:"Olive", type:"fruit", cat:"Noyau", emoji:"🫒",
+    latin:"Olea europaea", famille:"Oléacées",
+    saison:[9,10,11], saisonTxt:"Automne", origine:"Méditerranée orientale",
+    image:"images/olive.jpg",
+    description:"L'olivier est cultivé depuis plus de 6 000 ans en Méditerranée, symbole de paix et de longévité. L'olive crue est impropre à la consommation (très amère). Pressée, elle donne l'huile d'olive, riche en acide oléique cardioprotecteur.",
+    nutrition:{kcal:145, glucides:3.8, fibres:3.3, proteines:1.0, lipides:15.3, vitC:0},
+    tags:["Acides gras monoinsaturés","Vitamine E","Vitamine K","Squalène"],
+    funfact:null, plantation:null
+  },
+
+  // ══ FRUITS À PÉPINS ════════════════════════════════════════
+  {
+    id:21, nom:"Pomme", type:"fruit", cat:"Pepins", emoji:"🍎",
+    latin:"Malus domestica", famille:"Rosacées",
+    saison:[8,9,10,11,0,1,2], saisonTxt:"Automne – Hiver", origine:"Kazakhstan (montagnes Tian Shan)",
+    image:"images/pomme.jpg",
+    description:"Descend de Malus sieversii, espèce encore présente dans les forêts du Kazakhstan. Domestiquée il y a 10 000 ans le long de la Route de la Soie. Plus de 7 500 variétés cultivées dans le monde. La pectine de sa peau nourrit le microbiome intestinal.",
+    nutrition:{kcal:52, glucides:14, fibres:2.4, proteines:0.3, lipides:0.2, vitC:5},
+    tags:["Pectine","Antioxydants","Vitamine C","Fibres"],
+    funfact:"Il existe plus de 7 500 variétés de pommes dans le monde ! En France, on en cultive une centaine, dont certaines comme la 'Calville blanche' datent du XVIIe siècle.",
+    plantation:{
+      exposition:"Plein soleil", sol:"Bien drainé, légèrement acide (pH 6–7)",
+      arrosage:"Modéré, surtout en été", distance:"4 à 6 m entre les arbres",
+      recolte:"Août à novembre selon la variété",
+      conseil:"Plantez 2 variétés pour assurer la pollinisation croisée. Taillez chaque hiver pour aérer la ramure."
+    }
+  },
+  {
+    id:22, nom:"Poire", type:"fruit", cat:"Pepins", emoji:"🍐",
+    latin:"Pyrus communis", famille:"Rosacées",
+    saison:[8,9,10,11], saisonTxt:"Automne", origine:"Caucase / Europe méridionale",
+    image:"images/poire.jpg",
+    description:"Le poirier sauvage est originaire du Caucase. Les Romains la cultivaient intensivement. La poire contient des cellules scléreuses ('grains de sable') qui lui donnent sa texture granuleuse. La France fut longtemps le grand sélectionneur mondial de variétés.",
+    nutrition:{kcal:57, glucides:15.2, fibres:3.1, proteines:0.4, lipides:0.1, vitC:4},
+    tags:["Fibres","Vitamine C","Vitamine K","Cuivre"],
+    funfact:null, plantation:null
+  },
+  {
+    id:23, nom:"Raisin", type:"fruit", cat:"Pepins", emoji:"🍇",
+    latin:"Vitis vinifera", famille:"Vitacées",
+    saison:[8,9,10], saisonTxt:"Automne", origine:"Caucase / Proche-Orient",
+    image:"images/raisin.jpg",
+    description:"La vigne est l'une des premières plantes domestiquées — cultivée au Caucase depuis 8 000 ans. Le raisin contient du resvératrol, un polyphénol aux propriétés cardioprotectrices concentré dans la peau des raisins noirs.",
+    nutrition:{kcal:69, glucides:18, fibres:0.9, proteines:0.7, lipides:0.2, vitC:3},
+    tags:["Resvératrol","Vitamine C","Vitamine K","Antioxydants"],
+    funfact:null, plantation:null
+  },
+  {
+    id:24, nom:"Kiwi", type:"fruit", cat:"Pepins", emoji:"🥝",
+    latin:"Actinidia deliciosa", famille:"Actinidiacées",
+    saison:[10,11,0,1,2,3], saisonTxt:"Automne – Hiver", origine:"Yunnan (Chine) / Nouvelle-Zélande",
+    image:"images/kiwi.jpg",
+    description:"Originaire du Yunnan chinois, introduit en Nouvelle-Zélande au début du XXe siècle. Sa chair contient 2 fois plus de vitamine C que l'orange et de l'actinidine, une enzyme qui aide à la digestion des protéines.",
+    nutrition:{kcal:61, glucides:14.7, fibres:3.0, proteines:1.1, lipides:0.5, vitC:93},
+    tags:["Vitamine C","Vitamine K","Potassium","Actinidine"],
+    funfact:null, plantation:null
+  },
+  {
+    id:25, nom:"Grenade", type:"fruit", cat:"Pepins", emoji:"🍎",
+    latin:"Punica granatum", famille:"Lythracées",
+    saison:[9,10,11,0], saisonTxt:"Automne – Hiver", origine:"Iran / Proche-Orient",
+    image:"images/grenade.jpg",
+    description:"Cultivée depuis plus de 5 000 ans en Iran et Méditerranée. Symbole universel de fécondité. Ses arilles sont extraordinairement riches en punicalagines — des antioxydants plus puissants que ceux du vin rouge ou du thé vert.",
+    nutrition:{kcal:83, glucides:18.7, fibres:4.0, proteines:1.7, lipides:1.2, vitC:10},
+    tags:["Punicalagines","Polyphénols","Vitamine C","Folate"],
+    funfact:null, plantation:null
+  },
+  {
+    id:26, nom:"Figue", type:"fruit", cat:"Pepins", emoji:"🍑",
+    latin:"Ficus carica", famille:"Moracées",
+    saison:[7,8,9,10], saisonTxt:"Été – Automne", origine:"Jordanie / Méditerranée",
+    image:"images/figue.jpg",
+    description:"L'une des toutes premières plantes domestiquées — des figues cultivées retrouvées en Jordanie datent de 11 400 ans. Ce qu'on mange est une infrutescence : une fleur inversée (syconium) renfermant des centaines de fleurs et graines.",
+    nutrition:{kcal:74, glucides:19.2, fibres:2.9, proteines:0.8, lipides:0.3, vitC:2},
+    tags:["Calcium","Potassium","Fibres","Polyphénols"],
+    funfact:null, plantation:null
+  },
+  {
+    id:27, nom:"Coing", type:"fruit", cat:"Pepins", emoji:"🍐",
+    latin:"Cydonia oblonga", famille:"Rosacées",
+    saison:[9,10,11], saisonTxt:"Automne", origine:"Caucase / Iran",
+    image:"images/coing.jpg",
+    description:"L'un des plus anciens fruits cultivés, très apprécié dans l'Antiquité grecque et romaine. Impropre à la consommation cru en raison de sa dureté et de son astringence, il révèle ses arômes uniques à la cuisson.",
+    nutrition:{kcal:57, glucides:15.3, fibres:1.9, proteines:0.4, lipides:0.1, vitC:15},
+    tags:["Pectine","Vitamine C","Cuivre","Fibres"],
+    funfact:null, plantation:null
+  },
+
+  // ══ FRUITS TROPICAUX ════════════════════════════════════════
+  {
+    id:28, nom:"Banane", type:"fruit", cat:"Tropicaux", emoji:"🍌",
+    latin:"Musa acuminata", famille:"Musacées",
+    saison:[0,1,2,3,4,5,6,7,8,9,10,11], saisonTxt:"Toute l'année", origine:"Papouasie-Nouvelle-Guinée",
+    image:"images/banane.jpg",
+    description:"L'une des plus anciennes cultures — domestiquée il y a 8 000 ans en Nouvelle-Guinée. La variété Cavendish est un clone stérile sans graines, reproduit uniquement par bouturage. Riche en tryptophane, précurseur de la sérotonine. La banane verte contient de l'amidon résistant, prébiotique bénéfique.",
+    nutrition:{kcal:89, glucides:23, fibres:2.6, proteines:1.1, lipides:0.3, vitC:9},
+    tags:["Potassium","Magnésium","Tryptophane","Amidon résistant"],
+    funfact:"Le bananier n'est pas un arbre mais une herbe géante ! La tige visible est en réalité un pseudotronc formé de gaines foliaires superposées. Chaque pied ne produit qu'un seul régime, puis meurt.",
+    plantation:{
+      exposition:"Plein soleil, chaleur et humidité", sol:"Riche, profond, bien drainé",
+      arrosage:"Abondant et régulier", distance:"3–4 m entre pieds",
+      recolte:"12–18 mois après plantation",
+      conseil:"En France métropolitaine, possible uniquement en serre chaude ou dans les régions très douces (Bretagne, PACA). Les variétés décoratives tolèrent mieux le froid."
+    }
+  },
+  {
+    id:29, nom:"Ananas", type:"fruit", cat:"Tropicaux", emoji:"🍍",
+    latin:"Ananas comosus", famille:"Broméliacées",
+    saison:[0,1,2,3,4,5,6,7,8,9,10,11], saisonTxt:"Toute l'année", origine:"Brésil / Paraguay",
+    image:"images/ananas.jpg",
+    description:"Originaire d'Amérique du Sud, découvert par les Européens en 1493. C'est une infrutescence — 100 à 200 petits fruits fusionnés. Contient la bromélaïne, un complexe d'enzymes protéolytiques aux propriétés anti-inflammatoires utilisé comme attendrisseur de viande.",
+    nutrition:{kcal:50, glucides:13.1, fibres:1.4, proteines:0.5, lipides:0.1, vitC:48},
+    tags:["Bromélaïne","Vitamine C","Manganèse","Vitamine B1"],
+    funfact:null, plantation:null
+  },
+  {
+    id:30, nom:"Papaye", type:"fruit", cat:"Tropicaux", emoji:"🍈",
+    latin:"Carica papaya", famille:"Caricacées",
+    saison:[0,1,2,3,4,5,6,7,8,9,10,11], saisonTxt:"Toute l'année", origine:"Mexique / Amérique centrale",
+    image:"images/papaye.jpg",
+    description:"Cultivée par les Mayas depuis l'Antiquité. Contient la papaïne, une enzyme protéolytique utilisée en médecine digestive. Sa chair est parmi les plus riches en vitamine C des fruits tropicaux. Les graines noires, poivrées, sont comestibles.",
+    nutrition:{kcal:43, glucides:11, fibres:1.8, proteines:0.5, lipides:0.3, vitC:62},
+    tags:["Papaïne","Vitamine C","Vitamine A","Folate"],
+    funfact:null, plantation:null
+  },
+  {
+    id:31, nom:"Litchi", type:"fruit", cat:"Tropicaux", emoji:"🍓",
+    latin:"Litchi chinensis", famille:"Sapindacées",
+    saison:[6,7], saisonTxt:"Été", origine:"Chine méridionale",
+    image:"images/litchi.jpg",
+    description:"Cultivé depuis plus de 2 000 ans en Chine. Fruit favori des empereurs Tang. Sa chair blanche translucide est d'une grande douceur. Les litchis non mûrs peuvent provoquer des hypoglycémies graves consommés en grande quantité à jeun.",
+    nutrition:{kcal:66, glucides:16.5, fibres:1.3, proteines:0.8, lipides:0.4, vitC:72},
+    tags:["Vitamine C","Vitamine B6","Potassium","Cuivre"],
+    funfact:null, plantation:null
+  },
+  {
+    id:32, nom:"Fruit de la passion", type:"fruit", cat:"Tropicaux", emoji:"🍋",
+    latin:"Passiflora edulis", famille:"Passifloracées",
+    saison:[9,10,11,0], saisonTxt:"Automne – Hiver", origine:"Amazonie brésilienne",
+    image:"images/fruit-de-la-passion.jpg",
+    description:"Originaire d'Amazonie, baptisé 'passiflore' par des missionnaires espagnols du XVIe siècle qui voyaient dans la fleur les instruments de la Passion du Christ. Sa pulpe acidulée parsemée de graines noires est extraordinairement aromatique.",
+    nutrition:{kcal:97, glucides:23.4, fibres:10.4, proteines:2.2, lipides:0.7, vitC:30},
+    tags:["Fibres","Vitamine C","Vitamine A","Polyphénols"],
+    funfact:null, plantation:null
+  },
+  {
+    id:33, nom:"Noix de coco", type:"fruit", cat:"Tropicaux", emoji:"🥥",
+    latin:"Cocos nucifera", famille:"Arécacées",
+    saison:[0,1,2,3,4,5,6,7,8,9,10,11], saisonTxt:"Toute l'année", origine:"Asie du Sud-Est / Pacifique",
+    image:"images/noix-de-coco.jpg",
+    description:"Dispersée sur toutes les côtes tropicales par les courants marins. Ce qu'on appelle 'noix de coco' est en réalité un très grand noyau (drupe). L'eau de coco naturelle est stérile et fut utilisée comme sérum de perfusion pendant la Seconde Guerre mondiale.",
+    nutrition:{kcal:354, glucides:15.2, fibres:9.0, proteines:3.3, lipides:33.5, vitC:3},
+    tags:["Acide laurique","Manganèse","Cuivre","Fibres"],
+    funfact:null, plantation:null
+  },
+  {
+    id:34, nom:"Goyave", type:"fruit", cat:"Tropicaux", emoji:"🍈",
+    latin:"Psidium guajava", famille:"Myrtacées",
+    saison:[3,4,5,6], saisonTxt:"Printemps – Été", origine:"Mexique / Amérique centrale",
+    image:"images/goyave.jpg",
+    description:"Originaire d'Amérique centrale, la goyave détient le record absolu de teneur en vitamine C parmi les fruits — 4 à 5 fois plus que l'orange. Sa chair rose ou blanche est très parfumée. L'une des sources les plus concentrées en lycopène antioxydant.",
+    nutrition:{kcal:68, glucides:14.3, fibres:5.4, proteines:2.6, lipides:0.9, vitC:228},
+    tags:["Vitamine C","Vitamine A","Lycopène","Potassium"],
+    funfact:null, plantation:null
+  },
+  {
+    id:35, nom:"Avocat", type:"fruit", cat:"Tropicaux", emoji:"🥑",
+    latin:"Persea americana", famille:"Lauracées",
+    saison:[0,1,2,3,10,11], saisonTxt:"Automne – Printemps", origine:"Mexique / Amérique centrale",
+    image:"images/avocat.jpg",
+    description:"Fruit exceptionnel par sa richesse en acides gras mono-insaturés (oméga-9), bénéfiques pour la santé cardiovasculaire. Riche en potassium, folates et vitamine E. Le seul fruit vraiment riche en lipides sains.",
+    nutrition:{kcal:160, glucides:8.5, fibres:6.7, proteines:2.0, lipides:14.7, vitC:10},
+    tags:["Oméga-9","Potassium","Vitamine E","Folates"],
+    funfact:"L'avocat était destiné à disparaître ! Son principal disperseur naturel de graines, un grand mammifère de la mégafaune (gomphothère), s'est éteint il y a 13 000 ans. Sa survie doit tout à la domestication par les Aztèques.",
+    plantation:{
+      exposition:"Plein soleil, abri vent et gel", sol:"Bien drainé, légèrement acide",
+      arrosage:"Régulier, laisser sécher entre deux arrosages", distance:"5–8 m entre arbres",
+      recolte:"Variable selon variété (automne–hiver)",
+      conseil:"En France, cultivable en pleine terre uniquement sur la Côte d'Azur et en Corse. Ailleurs, possible en grand pot rentré l'hiver. Attention : un avocatier met 5 à 13 ans à produire depuis un noyau !"
+    }
+  },
+
+  // ══ FRUITS À COQUE ══════════════════════════════════════════
+  {
+    id:36, nom:"Noix", type:"fruit", cat:"Coque", emoji:"🌰",
+    latin:"Juglans regia", famille:"Juglandacées",
+    saison:[9,10,11], saisonTxt:"Automne", origine:"Iran / Asie centrale",
+    image:"images/noix.jpg",
+    description:"Le noyer est originaire des montagnes d'Iran. Des fossiles de noyers de plus de 2 millions d'années ont été retrouvés. Seule noix riche en oméga-3 végétaux (ALA). Le Périgord et Grenoble bénéficient d'AOP françaises.",
+    nutrition:{kcal:654, glucides:13.7, fibres:6.7, proteines:15.2, lipides:65.2, vitC:1},
+    tags:["Oméga-3 (ALA)","Vitamine E","Magnésium","Polyphénols"],
+    funfact:null, plantation:null
+  },
+  {
+    id:37, nom:"Amande", type:"fruit", cat:"Coque", emoji:"🌰",
+    latin:"Prunus dulcis", famille:"Rosacées",
+    saison:[8,9,10], saisonTxt:"Automne", origine:"Asie centrale / Proche-Orient",
+    image:"images/amande.jpg",
+    description:"L'amandier est l'un des premiers arbres fruitiers domestiqués — il y a 5 000 ans au Proche-Orient. L'amande est botaniquement un noyau de drupe. Existait sous deux formes : douce (comestible) et amère (contenant de l'acide cyanhydrique potentiellement toxique).",
+    nutrition:{kcal:579, glucides:21.7, fibres:12.5, proteines:21.2, lipides:49.9, vitC:0},
+    tags:["Vitamine E","Magnésium","Calcium","Protéines"],
+    funfact:null, plantation:null
+  },
+  {
+    id:38, nom:"Noisette", type:"fruit", cat:"Coque", emoji:"🌰",
+    latin:"Corylus avellana", famille:"Bétulacées",
+    saison:[8,9,10], saisonTxt:"Automne", origine:"Europe / Asie Mineure",
+    image:"images/noisette.jpg",
+    description:"Le noisetier fut l'un des premiers arbres à repeupler les forêts d'Europe après la dernière glaciation. Ses noisettes constituaient une ressource essentielle pour les populations préhistoriques. La Turquie assure aujourd'hui 70% de la production mondiale.",
+    nutrition:{kcal:628, glucides:16.7, fibres:9.7, proteines:15.0, lipides:60.8, vitC:0},
+    tags:["Vitamine E","Vitamine B1","Magnésium","Proanthocyanidines"],
+    funfact:null, plantation:null
+  },
+  {
+    id:39, nom:"Châtaigne", type:"fruit", cat:"Coque", emoji:"🌰",
+    latin:"Castanea sativa", famille:"Fagacées",
+    saison:[9,10,11], saisonTxt:"Automne", origine:"Sud de l'Europe / Asie Mineure",
+    image:"images/chataigne.jpg",
+    description:"Surnommé 'l'arbre à pain', le châtaignier fut pendant des siècles la base alimentaire des paysans montagnards (Corse, Ardèche, Cévennes). Seul fruit à coque riche en glucides et pauvre en lipides. La farine de châtaigne est naturellement sans gluten.",
+    nutrition:{kcal:245, glucides:52.1, fibres:8.1, proteines:3.2, lipides:2.6, vitC:43},
+    tags:["Glucides complexes","Vitamine C","Vitamine B6","Potassium"],
+    funfact:null, plantation:null
+  },
+
+  // ══ LÉGUMES-RACINES ════════════════════════════════════════
+  {
+    id:40, nom:"Carotte", type:"legume", cat:"Racines", emoji:"🥕",
+    latin:"Daucus carota", famille:"Apiacées",
+    saison:[7,8,9,10,11,0,1,2,3], saisonTxt:"Toute l'année", origine:"Afghanistan / Perse",
+    image:"images/carotte.jpg",
+    description:"La carotte sauvage est originaire d'Afghanistan. Elle était à l'origine violette ou jaune — la carotte orange est apparue aux Pays-Bas au XVIIe siècle, probablement sélectionnée en hommage à la maison d'Orange-Nassau. Riche en bêta-carotène, la cuisson et les matières grasses améliorent son absorption.",
+    nutrition:{kcal:41, glucides:9.6, fibres:2.8, proteines:0.9, lipides:0.2, vitC:6},
+    tags:["Bêta-carotène","Vitamine A","Fibres","Potassium"],
+    funfact:"Les premières carottes cultivées étaient violettes ou jaunes ! La carotte orange a été développée au XVIIe siècle par des agriculteurs néerlandais en hommage à la maison royale d'Orange.",
+    plantation:{
+      exposition:"Soleil ou mi-ombre", sol:"Meuble, sableux, profond, sans cailloux",
+      arrosage:"Régulier et modéré", distance:"5–8 cm entre plants",
+      recolte:"3 à 4 mois après semis",
+      conseil:"Semez en ligne et éclaircissez tôt. Les cailloux et les excès d'azote font fourcher les racines."
+    }
+  },
+  {
+    id:41, nom:"Betterave rouge", type:"legume", cat:"Racines", emoji:"🟣",
+    latin:"Beta vulgaris", famille:"Amaranthacées",
+    saison:[7,8,9,10,11,0,1,2], saisonTxt:"Automne – Hiver", origine:"Côtes méditerranéennes",
+    image:"images/betterave.webp",
+    description:"Descend de la betterave maritime du littoral méditerranéen. Sa couleur rouge-violet est due aux bétalaïnes, pigments anti-inflammatoires. Ses nitrates naturels améliorent les performances sportives en augmentant l'oxygénation musculaire.",
+    nutrition:{kcal:43, glucides:9.6, fibres:2.8, proteines:1.6, lipides:0.2, vitC:5},
+    tags:["Nitrates","Bétalaïnes","Folates","Manganèse"],
+    funfact:"La betterave sucrière, dont on tire le sucre blanc, est une variété de la même espèce que la betterave rouge ! Elles partagent le même ancêtre sauvage : la blette maritime des côtes méditerranéennes.",
+    plantation:{
+      exposition:"Plein soleil", sol:"Profond, meuble, sans pierres, pH 6,5–7",
+      arrosage:"Régulier, modéré", distance:"10–15 cm entre plants",
+      recolte:"3–4 mois après semis",
+      conseil:"Éclaircissez tôt (chaque graine donne 2–4 plantules). Les jeunes pousses éclaircies se mangent en salade ! Récoltez avant les grosses gelées."
+    }
+  },
+  {
+    id:42, nom:"Navet", type:"legume", cat:"Racines", emoji:"🌱",
+    latin:"Brassica rapa", famille:"Brassicacées",
+    saison:[9,10,11,0,1,2,3], saisonTxt:"Automne – Hiver", origine:"Europe / Asie centrale",
+    image:"images/navet.jpg",
+    description:"L'un des légumes les plus anciens — présent dans l'alimentation européenne depuis la préhistoire. Avant la pomme de terre, il était l'un des aliments de base des paysans. Appartient aux crucifères et contient des glucosinolates aux propriétés anticancéreuses.",
+    nutrition:{kcal:28, glucides:6.4, fibres:1.8, proteines:0.9, lipides:0.1, vitC:21},
+    tags:["Vitamine C","Glucosinolates","Potassium","Fibres"],
+    funfact:null, plantation:null
+  },
+  {
+    id:43, nom:"Radis", type:"legume", cat:"Racines", emoji:"🌱",
+    latin:"Raphanus sativus", famille:"Brassicacées",
+    saison:[3,4,5,6,7,8], saisonTxt:"Printemps – Été", origine:"Asie orientale / Méditerranée",
+    image:"images/radis.jpg",
+    description:"L'un des premiers légumes cultivés — les Égyptiens l'incluaient dans les rations des bâtisseurs des pyramides. Son goût piquant est dû aux isothiocyanates libérés lors de la coupe. Le daikon japonais géant peut dépasser 50 cm.",
+    nutrition:{kcal:16, glucides:3.4, fibres:1.6, proteines:0.7, lipides:0.1, vitC:15},
+    tags:["Vitamine C","Isothiocyanates","Folate","Potassium"],
+    funfact:null, plantation:null
+  },
+  {
+    id:44, nom:"Panais", type:"legume", cat:"Racines", emoji:"🌱",
+    latin:"Pastinaca sativa", famille:"Apiacées",
+    saison:[9,10,11,0,1,2,3], saisonTxt:"Automne – Hiver", origine:"Europe / Sibérie méridionale",
+    image:"images/panais.jpg",
+    description:"Grand oublié des légumes, le panais était très populaire au Moyen Âge comme source de sucre (avant la canne). Progressivement remplacé par la pomme de terre au XVIIe siècle. Sa saveur douce légèrement anisée lui vaut aujourd'hui un retour remarqué en cuisine gastronomique.",
+    nutrition:{kcal:75, glucides:17.9, fibres:4.9, proteines:1.3, lipides:0.3, vitC:17},
+    tags:["Vitamine C","Vitamine K","Folate","Fibres solubles"],
+    funfact:null, plantation:null
+  },
+  {
+    id:45, nom:"Céleri-rave", type:"legume", cat:"Racines", emoji:"🌱",
+    latin:"Apium graveolens var. rapaceum", famille:"Apiacées",
+    saison:[9,10,11,0,1,2], saisonTxt:"Automne – Hiver", origine:"Méditerranée",
+    image:"images/celeri-rave.jpg",
+    description:"Le céleri-rave est une variété cultivée pour sa racine. Sa saveur anisée et terreuse en fait un classique de la cuisine française, notamment en rémoulade. Cultivé depuis l'Antiquité en Méditerranée comme plante médicinale.",
+    nutrition:{kcal:42, glucides:9.2, fibres:1.8, proteines:1.5, lipides:0.3, vitC:8},
+    tags:["Vitamine K","Vitamine C","Phosphore","Potassium"],
+    funfact:null, plantation:null
+  },
+
+  // ══ LÉGUMES-FEUILLES ════════════════════════════════════════
+  {
+    id:46, nom:"Épinard", type:"legume", cat:"Feuilles", emoji:"🥬",
+    latin:"Spinacia oleracea", famille:"Amaranthacées",
+    saison:[2,3,4,8,9,10], saisonTxt:"Printemps / Automne", origine:"Perse (Iran actuel)",
+    image:"images/epinard.jpg",
+    description:"Originaire de Perse, diffusé en Europe via l'Espagne arabe au XIe siècle. Légume feuille très nutritif, apportant du fer non-héminique, du magnésium et de la vitamine K. Consommer avec de la vitamine C pour optimiser l'absorption du fer.",
+    nutrition:{kcal:23, glucides:3.6, fibres:2.2, proteines:2.9, lipides:0.4, vitC:28},
+    tags:["Fer","Vitamine K","Folates","Magnésium"],
+    funfact:"Popeye a popularisé l'épinard grâce à sa richesse en fer — mais une erreur de virgule du XIXe siècle lui attribuait 10 fois plus de fer que la réalité ! Il en reste néanmoins une excellente source.",
+    plantation:{
+      exposition:"Mi-ombre à soleil voilé", sol:"Riche en humus, frais, pH 6,5–7",
+      arrosage:"Régulier, maintenir humide", distance:"15–20 cm entre plants",
+      recolte:"6–8 semaines après semis",
+      conseil:"Culture de printemps et d'automne — il monte en graine par forte chaleur. Semez en succession pour échelonner la récolte."
+    }
+  },
+  {
+    id:47, nom:"Chou kale", type:"legume", cat:"Feuilles", emoji:"🥬",
+    latin:"Brassica oleracea var. sabellica", famille:"Brassicacées",
+    saison:[9,10,11,0,1,2], saisonTxt:"Automne – Hiver", origine:"Méditerranée orientale",
+    image:"images/chou-kale.jpg",
+    description:"L'une des formes les plus primitives de chou cultivé. Très riche en vitamines K et C, en calcium biodisponible (mieux absorbé que celui du lait) et en sulforaphane. Popularisé comme 'superfood' aux États-Unis dans les années 2010.",
+    nutrition:{kcal:49, glucides:8.8, fibres:3.6, proteines:4.3, lipides:0.9, vitC:120},
+    tags:["Vitamine K","Vitamine C","Calcium","Glucosinolates"],
+    funfact:null, plantation:null
+  },
+  {
+    id:48, nom:"Laitue", type:"legume", cat:"Feuilles", emoji:"🥬",
+    latin:"Lactuca sativa", famille:"Astéracées",
+    saison:[3,4,5,6,7,8,9,10], saisonTxt:"Printemps – Automne", origine:"Méditerranée / Proche-Orient",
+    image:"images/laitue.jpg",
+    description:"Cultivée depuis plus de 4 500 ans — des représentations figurent dans des tombes égyptiennes. Son nom vient du latin 'lac' (lait) pour le suc laiteux de sa tige. Contient des lactucines aux légers effets sédatifs.",
+    nutrition:{kcal:15, glucides:2.9, fibres:1.3, proteines:1.4, lipides:0.2, vitC:4},
+    tags:["Vitamine K","Vitamine A","Folate","Potassium"],
+    funfact:null, plantation:null
+  },
+  {
+    id:49, nom:"Mâche", type:"legume", cat:"Feuilles", emoji:"🥬",
+    latin:"Valerianella locusta", famille:"Valérianacées",
+    saison:[10,11,0,1,2,3], saisonTxt:"Automne – Hiver", origine:"Europe / Caucase",
+    image:"images/mache.jpg",
+    description:"Longtemps considérée comme mauvaise herbe, cultivée seulement depuis le XVIIe siècle. L'une des rares salades d'hiver. Sa teneur en oméga-3 est remarquable : 3 fois plus que la laitue. La Vendée est première région productrice.",
+    nutrition:{kcal:21, glucides:3.6, fibres:1.5, proteines:2.0, lipides:0.4, vitC:38},
+    tags:["Oméga-3","Vitamine C","Vitamine B6","Folate"],
+    funfact:null, plantation:null
+  },
+  {
+    id:50, nom:"Chou rouge", type:"legume", cat:"Feuilles", emoji:"🥬",
+    latin:"Brassica oleracea var. capitata rubra", famille:"Brassicacées",
+    saison:[8,9,10,11,0,1], saisonTxt:"Automne – Hiver", origine:"Europe",
+    image:"images/chou-rouge.jpg",
+    description:"Variété sélectionnée du chou sauvage, dont la couleur rouge-violette provient des anthocyanes. Sa teneur en vitamine C est 50% supérieure au chou vert. Ses anthocyanes servent aussi d'indicateur naturel de pH.",
+    nutrition:{kcal:31, glucides:7.4, fibres:2.1, proteines:1.4, lipides:0.2, vitC:57},
+    tags:["Vitamine C","Vitamine K","Anthocyanes","Glucosinolates"],
+    funfact:null, plantation:null
+  },
+
+  // ══ LÉGUMES-FLEURS ══════════════════════════════════════════
+  {
+    id:51, nom:"Artichaut", type:"legume", cat:"Fleurs", emoji:"🌿",
+    latin:"Cynara scolymus", famille:"Astéracées",
+    saison:[3,4,5,6,7,8,9], saisonTxt:"Printemps – Été", origine:"Afrique du Nord / Méditerranée",
+    image:"images/artichaut.jpg",
+    description:"Descend du cardon sauvage d'Afrique du Nord. Ce qu'on mange est le capitule floral encore fermé — le fond charnu (cœur) et les bractées (feuilles) à la base. La cynarine stimule la production de bile et protège le foie. La Bretagne produit 75% de la récolte française.",
+    nutrition:{kcal:47, glucides:10.5, fibres:5.4, proteines:3.3, lipides:0.2, vitC:12},
+    tags:["Cynarine","Inuline","Vitamine K","Folate"],
+    funfact:null, plantation:null
+  },
+  {
+    id:52, nom:"Chou-fleur", type:"legume", cat:"Fleurs", emoji:"🥦",
+    latin:"Brassica oleracea var. botrytis", famille:"Brassicacées",
+    saison:[8,9,10,11,0,1,2], saisonTxt:"Automne – Hiver", origine:"Levant / Méditerranée",
+    image:"images/chou-fleur.jpg",
+    description:"Développé en variété cultivée à Chypre au Moyen Âge. Sa masse blanche compacte est une inflorescence dont les fleurs n'ont pas eu le temps de s'ouvrir. Il existe des variétés violettes, jaunes et le romanesco à la remarquable structure fractale.",
+    nutrition:{kcal:25, glucides:5.0, fibres:2.0, proteines:1.9, lipides:0.3, vitC:48},
+    tags:["Vitamine C","Vitamine K","Glucosinolates","Choline"],
+    funfact:null, plantation:null
+  },
+  {
+    id:53, nom:"Brocoli", type:"legume", cat:"Fleurs", emoji:"🥦",
+    latin:"Brassica oleracea var. italica", famille:"Brassicacées",
+    saison:[6,7,8,9,10,11], saisonTxt:"Automne – Hiver", origine:"Italie méridionale / Grèce antique",
+    image:"images/brocoli.jpg",
+    description:"L'un des légumes les plus étudiés en oncologie nutritionnelle : le sulforaphane qu'il contient active des gènes de défense cellulaire. La cuisson vapeur courte (4–5 min) préserve mieux ses propriétés. Légume crucifère parmi les plus nutritifs.",
+    nutrition:{kcal:34, glucides:7.0, fibres:2.6, proteines:2.8, lipides:0.4, vitC:89},
+    tags:["Sulforaphane","Vitamine C","Folates","Vitamine K"],
+    funfact:"Le brocoli que l'on mange est en réalité une inflorescence — un bouquet de fleurs non épanouies ! Si on le laisse dans le jardin, il fleurit en petites fleurs jaunes typiques des Brassicacées.",
+    plantation:{
+      exposition:"Soleil ou mi-ombre", sol:"Riche, frais, pH 6–7",
+      arrosage:"Régulier, maintenir humide", distance:"50–60 cm entre plants",
+      recolte:"Automne (semis printemps) ou printemps (semis été)",
+      conseil:"Après la récolte de la pomme centrale, des petites pousses latérales se forment et prolongent la production plusieurs semaines."
+    }
+  },
+
+  // ══ LÉGUMES-FRUITS ══════════════════════════════════════════
+  {
+    id:54, nom:"Tomate", type:"legume", cat:"Fruits-legumes", emoji:"🍅",
+    latin:"Solanum lycopersicum", famille:"Solanacées",
+    saison:[5,6,7,8,9], saisonTxt:"Été", origine:"Andes péruviennes / Mexique",
+    image:"images/tomate.jpg",
+    description:"Originaire des Andes, domestiquée au Mexique par les Aztèques, rapportée en Europe vers 1540. Longtemps suspecte — considérée toxique. Riche en lycopène, un puissant antioxydant dont l'absorption est améliorée par la cuisson et la présence de matière grasse.",
+    nutrition:{kcal:18, glucides:3.9, fibres:1.2, proteines:0.9, lipides:0.2, vitC:14},
+    tags:["Lycopène","Vitamine C","Faible calorie","Potassium"],
+    funfact:"La tomate était considérée comme toxique en Europe au XVIIIe siècle ! Ses feuilles, elles, le sont réellement — elles contiennent de la tomatine, un alcaloïde toxique.",
+    plantation:{
+      exposition:"Plein soleil (min. 6h/jour)", sol:"Riche, bien drainé, pH 6–6,8",
+      arrosage:"Régulier, éviter le feuillage", distance:"50–60 cm entre plants",
+      recolte:"Juillet à octobre",
+      conseil:"Installez des tuteurs dès la plantation. Pincez les gourmands pour concentrer l'énergie sur les fruits."
+    }
+  },
+  {
+    id:55, nom:"Aubergine", type:"legume", cat:"Fruits-legumes", emoji:"🍆",
+    latin:"Solanum melongena", famille:"Solanacées",
+    saison:[6,7,8,9], saisonTxt:"Été", origine:"Inde / Chine méridionale",
+    image:"images/aubergine.jpg",
+    description:"Originaire d'Inde et de Chine, cultivée depuis 1 500 ans. Diffusée en Europe par les Arabes. Sa peau violet foncé renferme des anthocyanes et de la nasunine, un antioxydant qui protège les membranes des cellules cérébrales.",
+    nutrition:{kcal:25, glucides:5.7, fibres:3.0, proteines:1.0, lipides:0.2, vitC:2},
+    tags:["Nasunine","Anthocyanes","Fibres","Cuivre"],
+    funfact:null, plantation:null
+  },
+  {
+    id:56, nom:"Courgette", type:"legume", cat:"Fruits-legumes", emoji:"🥒",
+    latin:"Cucurbita pepo", famille:"Cucurbitacées",
+    saison:[5,6,7,8,9], saisonTxt:"Été", origine:"Méso-Amérique",
+    image:"images/courgette.jpg",
+    description:"Forme sélectionnée en Italie au XIXe siècle à partir de la courge mexicaine. Légume cucurbitacée très peu calorique, composé à plus de 90% d'eau. Récoltée immature pour sa chair tendre. La peau contient de nombreux nutriments.",
+    nutrition:{kcal:17, glucides:3.1, fibres:1.0, proteines:1.2, lipides:0.3, vitC:17},
+    tags:["Faible calorie","Vitamine B6","Potassium","Hydratation"],
+    funfact:"La courgette est une courge cueillie avant maturité ! Si vous la laissez grossir dans le jardin, elle peut dépasser les 50 cm et peser plusieurs kilos.",
+    plantation:{
+      exposition:"Plein soleil", sol:"Riche en compost, bien drainé",
+      arrosage:"Abondant, régulier, au pied", distance:"80 cm à 1 m entre plants",
+      recolte:"Dès 60 jours après semis",
+      conseil:"Récoltez souvent et jeune (15–20 cm) pour stimuler la production. Une seule plante peut produire 10 kg par saison !"
+    }
+  },
+  {
+    id:57, nom:"Poivron rouge", type:"legume", cat:"Fruits-legumes", emoji:"🫑",
+    latin:"Capsicum annuum", famille:"Solanacées",
+    saison:[6,7,8,9], saisonTxt:"Été", origine:"Amérique centrale / Mexique",
+    image:"images/poivron.jpg",
+    description:"Variété douce du piment. Le poivron rouge contient 3 fois plus de vitamine C que l'orange. L'absence de capsaïcine est due à une mutation génétique. Le rouge est simplement le vert arrivé à maturité complète — plus sucré et plus nutritif.",
+    nutrition:{kcal:31, glucides:6.0, fibres:2.1, proteines:1.0, lipides:0.3, vitC:127},
+    tags:["Vitamine C","Capsanthine","Antioxydants","Vitamine A"],
+    funfact:"Le poivron rouge, le jaune et le vert sont le même fruit ! Le vert est simplement cueilli immature, tandis que le rouge est pleinement mûr — c'est pourquoi il est plus sucré, plus nutritif et plus cher.",
+    plantation:{
+      exposition:"Plein soleil, chaleur", sol:"Riche, bien drainé, pH 6–7",
+      arrosage:"Régulier, sans excès", distance:"40–50 cm entre plants",
+      recolte:"Août à octobre",
+      conseil:"Démarrez en semis sous abri en février–mars. Les poivrons apprécient la chaleur : un voile de forçage peut avancer la récolte de 2 à 3 semaines."
+    }
+  },
+  {
+    id:58, nom:"Concombre", type:"legume", cat:"Fruits-legumes", emoji:"🥒",
+    latin:"Cucumis sativus", famille:"Cucurbitacées",
+    saison:[5,6,7,8,9], saisonTxt:"Été", origine:"Inde (nord)",
+    image:"images/concombre.jpg",
+    description:"Cultivé en Inde depuis 3 000 ans. L'Empereur Tibère en exigeait chaque jour de l'année. Composé à 96% d'eau. Sa peau contient de la cucurbitacine, un composé naturellement amer dont les concentrations ont été réduites par sélection végétale.",
+    nutrition:{kcal:15, glucides:3.6, fibres:0.5, proteines:0.7, lipides:0.1, vitC:3},
+    tags:["Hydratation","Vitamine K","Potassium","Cucurbitacines"],
+    funfact:null, plantation:null
+  },
+  {
+    id:59, nom:"Potiron / Courge", type:"legume", cat:"Fruits-legumes", emoji:"🎃",
+    latin:"Cucurbita maxima", famille:"Cucurbitacées",
+    saison:[9,10,11,0,1,2], saisonTxt:"Automne – Hiver", origine:"Amériques (10 000 ans de culture)",
+    image:"images/potiron-courge.jpg",
+    description:"Cucurbitacée cultivée depuis 10 000 ans dans les Amériques, faisant partie de la 'triade des trois sœurs' avec maïs et haricot. Le potimarron, le butternut, la courge spaghetti et le pâtisson sont des variétés de courges.",
+    nutrition:{kcal:26, glucides:6.5, fibres:0.5, proteines:1.0, lipides:0.1, vitC:9},
+    tags:["Bêta-carotène","Vitamine C","Potassium","Fibres"],
+    funfact:null, plantation:null
+  },
+
+  // ══ LÉGUMES-BULBES ══════════════════════════════════════════
+  {
+    id:60, nom:"Oignon", type:"legume", cat:"Bulbes", emoji:"🧅",
+    latin:"Allium cepa", famille:"Amaryllidacées",
+    saison:[0,1,2,3,4,5,6,7,8,9,10,11], saisonTxt:"Toute l'année", origine:"Asie centrale",
+    image:"images/oignon.jpg",
+    description:"L'une des cultures maraîchères les plus anciennes — 5 000 ans. Les Égyptiens l'offraient aux dieux et le servaient aux ouvriers des pyramides. Les larmes qu'il provoque viennent du syn-propanethial-S-oxyde libéré à la coupe. Sa quercétine est un puissant anti-inflammatoire.",
+    nutrition:{kcal:40, glucides:9.3, fibres:1.7, proteines:1.1, lipides:0.1, vitC:7},
+    tags:["Quercétine","Vitamine C","Composés soufrés","Anti-inflammatoire"],
+    funfact:null, plantation:null
+  },
+  {
+    id:61, nom:"Ail", type:"legume", cat:"Bulbes", emoji:"🧄",
+    latin:"Allium sativum", famille:"Amaryllidacées",
+    saison:[5,6,7,8], saisonTxt:"Été – Automne", origine:"Asie centrale / Kazakhstan",
+    image:"images/ail.jpg",
+    description:"Cultivé depuis 5 000 ans. Les bâtisseurs des pyramides en recevaient des rations journalières. L'allicine — libérée lors du broyage — possède des propriétés antibactériennes, antifongiques et cardiovasculaires documentées. L'ail noir (fermenté) est encore plus riche en antioxydants.",
+    nutrition:{kcal:149, glucides:33, fibres:2.1, proteines:6.4, lipides:0.5, vitC:31},
+    tags:["Allicine","Antibactérien","Immunité","Cardioprotecteur"],
+    funfact:"L'allicine responsable de l'odeur de l'ail n'existe pas dans la gousse intacte ! Elle se forme par réaction chimique uniquement quand les cellules sont brisées — d'où l'intérêt de piler ou hacher l'ail plutôt que de le couper en lamelles.",
+    plantation:{
+      exposition:"Plein soleil", sol:"Léger, bien drainé, peu humide",
+      arrosage:"Peu d'arrosage, surtout en fin de culture", distance:"15 cm entre gousses",
+      recolte:"Juin–juillet (ail de printemps), juillet–août (ail d'hiver)",
+      conseil:"Plantez la pointe vers le haut à 5 cm de profondeur. Arrêtez d'arroser quand les feuilles jaunissent pour favoriser la conservation."
+    }
+  },
+  {
+    id:62, nom:"Poireau", type:"legume", cat:"Bulbes", emoji:"🥬",
+    latin:"Allium ampeloprasum", famille:"Amaryllidacées",
+    saison:[9,10,11,0,1,2,3], saisonTxt:"Automne – Hiver", origine:"Méditerranée / Proche-Orient",
+    image:"images/poireau.jpg",
+    description:"Cultivé depuis l'Antiquité. Légume emblématique du Pays de Galles (son emblème national). L'Empereur Néron en consommait chaque jour pour préserver sa voix. Sa partie verte contient 10 fois plus de vitamine K que le blanc.",
+    nutrition:{kcal:31, glucides:7.6, fibres:1.8, proteines:1.5, lipides:0.3, vitC:12},
+    tags:["Vitamine K","Vitamine C","Folate","Kaempférol"],
+    funfact:null, plantation:null
+  },
+  {
+    id:63, nom:"Fenouil", type:"legume", cat:"Bulbes", emoji:"🌿",
+    latin:"Foeniculum vulgare", famille:"Apiacées",
+    saison:[9,10,11,0,1,2], saisonTxt:"Automne – Hiver", origine:"Méditerranée",
+    image:"images/fenouil.jpg",
+    description:"Plante méditerranéenne utilisée depuis l'Antiquité comme aromate et légume. Le bulbe (base charnue des pétioles) est la partie consommée. Son goût anisé caractéristique vient de l'anéthole. Les Grecs lui attribuaient des vertus pour la vue et la longévité.",
+    nutrition:{kcal:31, glucides:7.3, fibres:3.1, proteines:1.2, lipides:0.2, vitC:12},
+    tags:["Vitamine C","Anéthole","Fibres","Potassium"],
+    funfact:null, plantation:null
+  },
+  {
+    id:64, nom:"Échalote", type:"legume", cat:"Bulbes", emoji:"🧅",
+    latin:"Allium cepa var. aggregatum", famille:"Amaryllidacées",
+    saison:[0,1,2,3,4,5,6,7,8,9,10,11], saisonTxt:"Toute l'année", origine:"Asie centrale / Proche-Orient",
+    image:"images/echalote.jpg",
+    description:"Variante de l'oignon dont l'origine reste débattue — certains pensent qu'elle vient d'Ashkelon (Palestine), d'où son nom anglais 'shallot'. Sa saveur plus douce et fine que l'oignon en fait un ingrédient précieux de la gastronomie française.",
+    nutrition:{kcal:72, glucides:16.8, fibres:3.2, proteines:2.5, lipides:0.1, vitC:8},
+    tags:["Quercétine","Kaempférol","Vitamine B6","Potassium"],
+    funfact:null, plantation:null
+  },
+
+  // ══ LÉGUMES-TUBERCULES ══════════════════════════════════════
+  {
+    id:65, nom:"Pomme de terre", type:"legume", cat:"Tubercules", emoji:"🥔",
+    latin:"Solanum tuberosum", famille:"Solanacées",
+    saison:[0,1,2,3,4,5,6,7,8,9,10,11], saisonTxt:"Toute l'année", origine:"Andes péruviennes / Bolivie",
+    image:"images/pomme-de-terre.jpg",
+    description:"Originaire des hautes Andes, cultivée depuis 8 000 ans par les Incas. Sa diffusion massive au XVIIIe siècle (notamment par Parmentier en France) déclencha une révolution alimentaire. Plus de 4 000 variétés existent dans les Andes.",
+    nutrition:{kcal:77, glucides:17.5, fibres:2.2, proteines:2.0, lipides:0.1, vitC:13},
+    tags:["Vitamine C","Vitamine B6","Potassium","Amidon résistant"],
+    funfact:null, plantation:null
+  },
+  {
+    id:66, nom:"Patate douce", type:"legume", cat:"Tubercules", emoji:"🍠",
+    latin:"Ipomoea batatas", famille:"Convolvulacées",
+    saison:[9,10,11,0], saisonTxt:"Automne – Hiver", origine:"Amérique centrale / du Sud",
+    image:"images/patate-douce.jpg",
+    description:"Cultivée depuis 8 000 ans. Mystère historique fascinant : elle était déjà cultivée en Polynésie avant l'arrivée des Européens — preuve de contacts transpacifiques. Sa chair orange est le légume le plus riche en bêta-carotène.",
+    nutrition:{kcal:86, glucides:20.1, fibres:3.0, proteines:1.6, lipides:0.1, vitC:20},
+    tags:["Bêta-carotène","Vitamine B6","Potassium","Vitamine C"],
+    funfact:null, plantation:null
+  },
+  {
+    id:67, nom:"Topinambour", type:"legume", cat:"Tubercules", emoji:"🥔",
+    latin:"Helianthus tuberosus", famille:"Astéracées",
+    saison:[9,10,11,0,1,2], saisonTxt:"Automne – Hiver", origine:"Amérique du Nord",
+    image:"images/topinambour.jpg",
+    description:"Plante de la famille des tournesols. Introduit en France en 1607. Très populaire jusqu'au XIXe siècle, remplacé par la pomme de terre. Sa richesse en inuline en fait un excellent prébiotique, mais responsable parfois de flatulences notables.",
+    nutrition:{kcal:73, glucides:17.4, fibres:1.6, proteines:2.0, lipides:0.0, vitC:4},
+    tags:["Inuline (prébiotique)","Vitamine C","Vitamine B1","Potassium"],
+    funfact:null, plantation:null
+  },
+
+  // ══ HERBES AROMATIQUES ══════════════════════════════════════
+  {
+    id:68, nom:"Basilic", type:"legume", cat:"Herbes", emoji:"🌿",
+    latin:"Ocimum basilicum", famille:"Lamiacées",
+    saison:[5,6,7,8,9], saisonTxt:"Été", origine:"Inde / Asie tropicale",
+    image:"images/basilic.jpg",
+    description:"Herbe aromatique méditerranéenne aux arômes puissants. À utiliser frais pour préserver ses huiles essentielles. Incontournable dans le pesto et la cuisine italienne et provençale.",
+    nutrition:{kcal:23, glucides:2.7, fibres:1.6, proteines:3.2, lipides:0.6, vitC:18},
+    tags:["Aromatique","Vitamine K","Antioxydants","Manganèse"],
+    funfact:"Le mot 'basilic' vient du grec basilikón, qui signifie 'herbe royale'. En Inde, le basilic sacré (tulsi) est vénéré dans la religion hindoue depuis plus de 3 000 ans.",
+    plantation:{
+      exposition:"Plein soleil, chaleur", sol:"Léger, bien drainé, riche",
+      arrosage:"Modéré, laisser sécher entre deux arrosages", distance:"20–25 cm entre plants",
+      recolte:"Juin à septembre, régulièrement",
+      conseil:"Pincez les sommités florales dès qu'elles apparaissent pour prolonger la récolte. Le basilic déteste le froid — ne le sortez pas avant 15 °C."
+    }
+  },
+  {
+    id:69, nom:"Persil", type:"legume", cat:"Herbes", emoji:"🌱",
+    latin:"Petroselinum crispum", famille:"Apiacées",
+    saison:[3,4,5,6,7,8,9,10], saisonTxt:"Printemps – Automne", origine:"Méditerranée",
+    image:"images/persil.jpg",
+    description:"Herbe aromatique exceptionnellement riche en vitamine C (133 mg/100g) et en vitamine K. À utiliser frais pour conserver tous ses nutriments. Excellent pour masquer l'odeur de l'ail. Dans l'Antiquité, les Grecs l'utilisaient pour couronner les vainqueurs sportifs.",
+    nutrition:{kcal:36, glucides:6.3, fibres:3.3, proteines:3.0, lipides:0.8, vitC:133},
+    tags:["Vitamine K","Vitamine C","Fer","Folates"],
+    funfact:"Le persil contient plus de vitamine C que le citron, à poids égal ! Pourtant on n'en consomme que quelques grammes à la fois.",
+    plantation:{
+      exposition:"Soleil à mi-ombre", sol:"Riche, frais, bien drainé",
+      arrosage:"Régulier", distance:"15–20 cm entre plants",
+      recolte:"Toute l'année (en pot à l'intérieur)",
+      conseil:"La germination est lente (3–4 semaines) : faites tremper les graines 24 h dans de l'eau tiède avant de semer. Récoltez toujours les tiges extérieures en premier."
+    }
+  },
+  {
+    id:70, nom:"Thym", type:"legume", cat:"Herbes", emoji:"🌿",
+    latin:"Thymus vulgaris", famille:"Lamiacées",
+    saison:[4,5,6,7,8,9], saisonTxt:"Printemps – Automne", origine:"Méditerranée",
+    image:"images/thym.webp",
+    description:"Herbe aromatique méditerranéenne aux propriétés antiseptiques reconnues grâce au thymol, son composé actif principal. Indispensable du bouquet garni, il parfume ragoûts, soupes et grillades.",
+    nutrition:{kcal:101, glucides:24, fibres:14, proteines:5.6, lipides:1.7, vitC:160},
+    tags:["Thymol","Antibactérien","Aromatique","Antioxydants"],
+    funfact:"Le thymol extrait du thym est utilisé comme désinfectant dans les produits ménagers et les bains de bouche depuis le XIXe siècle. Pendant la Première Guerre mondiale, l'huile de thym servait d'antiseptique sur les plaies.",
+    plantation:{
+      exposition:"Plein soleil, chaleur", sol:"Très drainé, pauvre, calcaire ou sableux",
+      arrosage:"Très peu (supporte la sécheresse)", distance:"25–30 cm entre plants",
+      recolte:"Avant et pendant la floraison (mai–juillet)",
+      conseil:"Le thym pousse mieux dans un sol pauvre ! Évitez d'amender et arrosez peu. Taillez légèrement après floraison pour maintenir une touffe compacte."
+    }
+  },
+
+  // ══ CHAMPIGNONS ══════════════════════════════════════════════
+  {
+    id:71, nom:"Champignon de Paris", type:"legume", cat:"Champignons", emoji:"🍄",
+    latin:"Agaricus bisporus", famille:"Agaricacées",
+    saison:[0,1,2,3,4,5,6,7,8,9,10,11], saisonTxt:"Toute l'année", origine:"France (cultivé)",
+    image:"images/champignon.jpg",
+    description:"Champignon cultivé le plus consommé en France, disponible toute l'année. Bonne source de protéines végétales, de sélénium et de vitamine D, surtout quand il est exposé à la lumière UV.",
+    nutrition:{kcal:22, glucides:3.3, fibres:1.0, proteines:3.1, lipides:0.3, vitC:2},
+    tags:["Protéines","Vitamine D","Sélénium","Faible calorie"],
+    funfact:"La première culture intensive du champignon de Paris date du règne de Louis XIV ! Les jardiniers de Versailles auraient découvert qu'il poussait dans les tunnels de pierre des environs de Paris.",
+    plantation:{
+      exposition:"Obscurité totale ou faible luminosité", sol:"Compost de fumier de cheval stérilisé + tourbe",
+      arrosage:"Léger et fréquent (humidité ~85–90 %)", distance:"Kit en bac ou en sac, pas d'espacement",
+      recolte:"3–4 semaines après inoculation du mycélium",
+      conseil:"Maintenez une température stable entre 15 et 20 °C. Des kits prêts à l'emploi sont disponibles pour débuter facilement à la maison."
+    }
+  },
+
+  // ══ LÉGUMINEUSES ════════════════════════════════════════════
+  {
+    id:72, nom:"Lentille verte", type:"legume", cat:"Legumineuses", emoji:"🫘",
+    latin:"Lens culinaris", famille:"Fabacées",
+    saison:[0,1,2,3,4,5,6,7,8,9,10,11], saisonTxt:"Toute l'année", origine:"Moyen-Orient",
+    image:"images/lentille.jpg",
+    description:"Légumineuse parmi les plus nutritives, excellent substitut végétal aux protéines animales. Sa richesse en fer, zinc et folates en fait un aliment de choix pour les végétariens. La lentille du Puy bénéficie d'une AOP. L'une des premières plantes domestiquées — 8 000 av. J.-C.",
+    nutrition:{kcal:116, glucides:20, fibres:7.9, proteines:9.0, lipides:0.4, vitC:1},
+    tags:["Protéines végétales","Fer","Folates","Fibres"],
+    funfact:"La lentille est l'une des premières plantes domestiquées par l'humanité — des traces de culture datent de 8 000 ans avant J.-C. en Mésopotamie. La forme des lentilles optiques leur doit d'ailleurs son nom !",
+    plantation:{
+      exposition:"Plein soleil", sol:"Léger, sec, calcaire ou neutre",
+      arrosage:"Peu d'arrosage (supporte la sécheresse)", distance:"5–10 cm entre graines",
+      recolte:"Juillet–août",
+      conseil:"Semez directement en place en avril–mai. La lentille enrichit le sol en azote grâce aux bactéries de ses racines : excellente culture en rotation avant une céréale."
+    }
+  }
+
+];
+
+// ════════════════════════════════════════════════════════════════
+//  LOGIQUE INTERACTIVE & FILTRES
+// ════════════════════════════════════════════════════════════════
+let currentType = 'tous';
+let currentCat = 'tous';
+
+// Initialisation au chargement
+window.addEventListener('DOMContentLoaded', () => {
+  updateCatFilters();
+  renderAll();
+});
+
+// Gérer le filtre par Type (Tous / Fruits / Légumes)
+function setType(type, btn) {
+  currentType = type;
+  currentCat = 'tous'; // Reset la catégorie
+  
+  const buttons = document.querySelectorAll('#type-filters .filter-btn');
+  buttons.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  updateCatFilters();
+  renderAll();
+}
+
+// Mettre à jour dynamiquement la liste des catégories secondaires
+function updateCatFilters() {
+  const container = document.getElementById('cat-filters');
+  
+  // Extraire les catégories uniques selon le type choisi
+  const filteredItems = DB.filter(item => currentType === 'tous' || item.type === currentType);
+  const categories = ['tous', ...new Set(filteredItems.map(item => item.cat))];
+  
+  // Noms plus jolis pour l'affichage
+  const catLabels = {
+    "tous": "Toutes catégories",
+    "Agrumes": "Agrumes", "Baies": "Baies & petits fruits", "Noyau": "Fruits à noyau",
+    "Pepins": "Fruits à pépins", "Tropicaux": "Fruits tropicaux", "Coque": "Fruits à coque",
+    "Racines": "Légumes-racines", "Feuilles": "Légumes-feuilles", "Fleurs": "Légumes-fleurs",
+    "Fruits-legumes": "Légumes-fruits", "Bulbes": "Légumes-bulbes", "Tubercules": "Légumes-tubercules",
+    "Herbes": "Herbes aromatiques", "Champignons": "Champignons", "Legumineuses": "Légumineuses"
+  };
+  
+  container.innerHTML = categories.map(cat => {
+    const label = catLabels[cat] || cat;
+    const activeClass = currentCat === cat ? 'active' : '';
+    return `<button class="filter-btn ${activeClass}" onclick="setCategory('${cat}', this)">${label}</button>`;
+  }).join('');
+}
+
+// Gérer le filtre par Catégorie
+function setCategory(cat, btn) {
+  currentCat = cat;
+  
+  const buttons = document.querySelectorAll('#cat-filters .filter-btn');
+  buttons.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  renderAll();
+}
+
+// Afficher les cartes dans la Grille
+function renderAll() {
+  const search = document.getElementById('search').value.toLowerCase();
+  const grid = document.getElementById('grid');
+  
+  let filtered = DB.filter(item => {
+    const matchesType = currentType === 'tous' || item.type === currentType;
+    const matchesCat = currentCat === 'tous' || item.cat === currentCat;
+    const matchesSearch = item.nom.toLowerCase().includes(search) || 
+                          (item.latin && item.latin.toLowerCase().includes(search)) ||
+                          (item.origine && item.origine.toLowerCase().includes(search)) ||
+                          (item.tags && item.tags.some(t => t.toLowerCase().includes(search)));
+    return matchesType && matchesCat && matchesSearch;
+  });
+  
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 4rem 0;">Aucun végétal trouvé pour votre recherche.</div>`;
+    return;
+  }
+  
+  // Nommage plus propre des badges
+  const catLabels = {
+    "Agrumes": "Agrumes", "Baies": "Baies", "Noyau": "À noyau",
+    "Pepins": "À pépins", "Tropicaux": "Tropicaux", "Coque": "À coque",
+    "Racines": "Racines", "Feuilles": "Feuilles", "Fleurs": "Fleurs",
+    "Fruits-legumes": "Légumes-fruits", "Bulbes": "Bulbes", "Tubercules": "Tubercules",
+    "Herbes": "Herbes", "Champignons": "Champignons", "Legumineuses": "Légumineuses"
+  };
+  
+  grid.innerHTML = filtered.map(d => `
+    <div class="card" onclick="openModal(${d.id})">
+      <div class="card-img-wrap">
+        <div class="emoji-fb">${d.emoji}</div>
+        <img src="${d.image}" alt="${d.nom}" style="position:absolute; top:0; left:0; width:100%; height:100%; object-fit:cover;" onerror="this.style.display='none'">
+      </div>
+      <div class="card-body">
+        <h3 class="card-name">${d.nom}</h3>
+        <span class="card-latin">${d.latin || ''}</span>
+        <span class="card-cat-badge" style="background: var(--accent-light); color: var(--accent-text);">${catLabels[d.cat] || d.cat}</span>
+        ${d.nutrition ? `
+          <div class="kcal-row">
+            <span>Valeur énergétique :</span>
+            <span class="kcal-val">${d.nutrition.kcal} kcal</span>
+          </div>
+        ` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+// Ouvrir la boîte modale détaillée
+function openModal(id) {
+  const d = DB.find(item => item.id === id);
+  if (!d) return;
+  
+  const modal = document.getElementById('modal');
+  
+  let nutritionContent = '';
+  if (d.nutrition) {
+    nutritionContent = `
+      <div id="tab-nutrition" class="tab-content" style="display:none; margin-top:1.5rem;">
+        <div style="display:grid; grid-template-columns: repeat(2, 1fr); gap:12px;">
+          <div style="background:var(--bg-panel); padding:12px; border-radius:8px;"><strong>Calories :</strong> ${d.nutrition.kcal} kcal / 100g</div>
+          <div style="background:var(--bg-panel); padding:12px; border-radius:8px;"><strong>Glucides :</strong> ${d.nutrition.glucides}g</div>
+          <div style="background:var(--bg-panel); padding:12px; border-radius:8px;"><strong>Fibres :</strong> ${d.nutrition.fibres}g</div>
+          <div style="background:var(--bg-panel); padding:12px; border-radius:8px;"><strong>Protéines :</strong> ${d.nutrition.proteines}g</div>
+          <div style="background:var(--bg-panel); padding:12px; border-radius:8px;"><strong>Lipides :</strong> ${d.nutrition.lipides}g</div>
+          <div style="background:var(--bg-panel); padding:12px; border-radius:8px;"><strong>Vitamine C :</strong> ${d.nutrition.vitC || 0}mg</div>
+        </div>
+      </div>
+    `;
+  }
+
+  let cultureContent = '';
+  if (d.plantation) {
+    cultureContent = `
+      <div id="tab-culture" class="tab-content" style="display:none; margin-top:1.5rem;">
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <p><strong>☀️ Exposition :</strong> ${d.plantation.exposition}</p>
+          <p><strong>🌱 Type de Sol :</strong> ${d.plantation.sol}</p>
+          <p><strong>💧 Arrosage :</strong> ${d.plantation.arrosage}</p>
+          ${d.plantation.distance ? `<p><strong>📏 Distance :</strong> ${d.plantation.distance}</p>` : ''}
+          ${d.plantation.recolte ? `<p><strong>🗓️ Récolte :</strong> ${d.plantation.recolte}</p>` : ''}
+          <p style="background:var(--bg-panel); padding:12px; border-radius:8px; margin-top:5px;"><strong>💡 Conseil du jardinier :</strong> ${d.plantation.conseil}</p>
+        </div>
+      </div>
+    `;
+  }
+
+  modal.innerHTML = `
+    <div class="modal-hero">
+      <div class="emoji-fb" style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:5rem; background:var(--bg-panel);">${d.emoji}</div>
+      <img src="${d.image}" alt="${d.nom}" style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover;" onerror="this.style.display='none'">
+      <button class="modal-close" onclick="closeModal()">&times;</button>
+    </div>
+    <div class="modal-content">
+      <h2 style="font-family:'Playfair Display', serif; font-size:2.2rem; margin-bottom:0.25rem;">${d.nom}</h2>
+      <p style="font-style:italic; color:var(--text-faint); margin-bottom:1.5rem;">${d.latin || ''} — Famille des ${d.famille || 'Inconnue'}</p>
+      
+      <div class="tabs-nav">
+        <button class="tab-btn active" onclick="switchTab('general', this)">Présentation</button>
+        ${d.nutrition ? `<button class="tab-btn" onclick="switchTab('nutrition', this)">Nutrition</button>` : ''}
+        ${d.plantation ? `<button class="tab-btn" onclick="switchTab('culture', this)">Culture</button>` : ''}
+      </div>
+      
+      <div id="tab-general" class="tab-content">
+        <p style="color:var(--text-muted); margin-bottom:1.5rem; font-size:15px; line-height:1.6;">${d.description || 'Pas de description.'}</p>
+        
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:15px; margin-bottom:1.5rem; background:var(--bg-panel); padding:1.25rem; border-radius:12px;">
+          <div><span style="font-size:11px; color:var(--text-faint); text-transform:uppercase; font-weight:600; display:block;">🌍 Origine</span><strong>${d.origine || '—'}</strong></div>
+          <div><span style="font-size:11px; color:var(--text-faint); text-transform:uppercase; font-weight:600; display:block;">📅 Saison optimale</span><strong>${d.saisonTxt || '—'}</strong></div>
+        </div>
+        
+        ${d.funfact ? `
+          <div style="background:var(--accent-light); color:var(--accent-text); padding:1.25rem; border-radius:12px; border-left:4px solid var(--accent);">
+            <strong style="font-size:14px; display:block; margin-bottom:4px;">💡 Le saviez-vous ?</strong>
+            <p style="font-size:14px; line-height:1.5;">${d.funfact}</p>
+          </div>
+        ` : ''}
+      </div>
+      
+      ${nutritionContent}
+      ${cultureContent}
+    </div>
+  `;
+  
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function handleOverlayClick(e) {
+  if (e.target.id === 'overlay') closeModal();
+}
+
+function switchTab(tabId, btn) {
+  const buttons = btn.parentElement.querySelectorAll('.tab-btn');
+  buttons.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  const contents = document.querySelectorAll('.tab-content');
+  contents.forEach(c => c.style.display = 'none');
+  
+  document.getElementById('tab-' + tabId).style.display = 'block';
+}
+
+// Détecter le défilement pour afficher/cacher la flèche
+window.addEventListener('scroll', function() {
+  const scrollButton = document.getElementById('back-to-top');
+  if (scrollButton) {
+    if (window.scrollY > 400) {
+      scrollButton.classList.add('show');
+    } else {
+      scrollButton.classList.remove('show');
+    }
+  }
+});
+
+// Fonction pour remonter tout en haut en douceur
+function scrollToTop() {
+  window.scrollTo({
+    top: 0,
+    behavior: 'smooth'
+  });
+}
+
+</script>
+
+</body>
+</html>
